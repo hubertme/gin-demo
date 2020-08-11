@@ -1,0 +1,5 @@
+package result
+
+const DEV_REPORT_ERROR = 999999
+
+const BAD_FORMATTED_REQUEST = 101010
