@@ -1,14 +1,14 @@
 package result
 
 type Response struct {
-	ErrorCode int `json:"error_code"`
-	Message string `json:"message"`
-	Data interface{} `json:"data"`
+	ErrorCode int         `json:"error_code"`
+	Message   string      `json:"message"`
+	Data      interface{} `json:"data"`
 }
 
 func Success(data interface{}) Response {
 	return Response{
-		ErrorCode: -1,
+		ErrorCode: 0,
 		Message:   "OK, request received well...",
 		Data:      data,
 	}
@@ -29,4 +29,3 @@ func Error(errorCode int, message string, data interface{}) Response {
 		Data:      data,
 	}
 }
-

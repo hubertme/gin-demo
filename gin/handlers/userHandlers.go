@@ -55,8 +55,42 @@ func PostNewUser(c *gin.Context) {
 	c.JSON(http.StatusOK, result.Success(user))
 }
 
-func UpdateUserById(c *gin.Context) {
+func updateUserData(oldUser datasource.User, newUser datasource.User) datasource.User {
+	if newUser.FullName != "" {
+		oldUser.FullName = newUser.FullName
+	}
 
+	if newUser.PhoneNumber != "" {
+		oldUser.PhoneNumber = newUser.PhoneNumber
+	}
+
+	return oldUser
+}
+
+func UpdateUserById(c *gin.Context) {
+	idInt64, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	id := int(idInt64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, result.Error(result.BAD_FORMATTED_REQUEST, "Need int as id", err.Error()))
+		return
+	} else if id <= 0 {
+		c.JSON(http.StatusBadRequest, result.Error(result.BAD_FORMATTED_REQUEST, "Require id > 0", nil))
+		return
+	} else if datasource.AllUsers[id].ID == 0 {
+		c.JSON(http.StatusBadRequest, result.Error(result.BAD_FORMATTED_REQUEST, fmt.Sprintf("User with ID %v does not found", id), nil))
+		return
+	}
+
+	user := datasource.User{}
+	parseErr := c.BindJSON(&user)
+	if parseErr != nil {
+		c.JSON(http.StatusBadRequest, result.Error(result.BAD_FORMATTED_REQUEST, "Require user data", parseErr.Error()))
+		return
+	}
+	datasource.AllUsers[id] = updateUserData(datasource.AllUsers[id], user)
+
+	c.JSON(http.StatusOK, result.Success(datasource.AllUsers[id]))
 }
 
 func DeleteUserById(c *gin.Context) {
@@ -67,7 +101,7 @@ func DeleteUserById(c *gin.Context) {
 	}
 	id := int(idInt64)
 
-	datasource.AllUsers[id] = datasource.User{}
+	delete(datasource.AllUsers, id)
 	c.JSON(http.StatusGone, result.Success(nil))
 }
 
