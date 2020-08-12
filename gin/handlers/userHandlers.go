@@ -138,13 +138,13 @@ func UpdateUserById(c *gin.Context) {
 	err = c.BindJSON(&user)
 	user.ID = id
 
-	statement, sqlErr := database.DB.Prepare("UPDATE users SET full_name = COALESCE(?, full_name), phone_number = COALESCE(?, phone_number) WHERE id = ?")
+	statement, sqlErr := database.DB.Prepare("UPDATE users SET full_name = IF(LENGTH(?) = 0, full_name, ?), phone_number = IF(LENGTH(?) = 0, phone_number, ?) WHERE id = ?")
 	if sqlErr != nil {
 		c.JSON(http.StatusBadRequest, result.DevError(sqlErr.Error()))
 		return
 	}
 
-	results, qErr := statement.Query(user.FullName, user.PhoneNumber, user.ID)
+	results, qErr := statement.Query(user.FullName, user.FullName, user.PhoneNumber, user.PhoneNumber, user.ID)
 	if qErr != nil {
 		c.JSON(http.StatusInternalServerError, result.DevError(qErr.Error()))
 		return
