@@ -6,6 +6,7 @@ func initGinHandlerGroups() {
 	// Test Endpoints
 	registerGetGinHandler()
 	registerPostGinHandler()
+	//registerTestDataGinHandler()
 
 	// App Endpoints
 	registerUserGinHandler()
@@ -34,4 +35,15 @@ func registerUserGinHandler() {
 	userRoute.PUT("/update/:id", handlers.UpdateUserById)
 	userRoute.DELETE("/delete", handlers.DeleteAllUsers)
 	userRoute.DELETE("/delete/:id", handlers.DeleteUserById)
+}
+
+func registerTestDataGinHandler() {
+	dataTestRoute := router.Group("/data")
+
+	dataTestRoute.GET("/fetch", handlers.GetAllTestUsers)
+	dataTestRoute.GET("/fetch/:id", handlers.GetTestUserById)
+	dataTestRoute.POST("/add", handlers.PostNewTestUser)
+	dataTestRoute.PUT("/update/:id", handlers.UpdateTestUserById)
+	dataTestRoute.DELETE("/delete", handlers.DeleteAllTestUsers)
+	dataTestRoute.DELETE("/delete/:id", handlers.DeleteTestUserById)
 }
